@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { ReportsModule } from './reports/reports.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const cookieSession = require('cookie-session');
 
@@ -28,7 +28,10 @@ const cookieSession = require('cookie-session');
   providers: [AppService],
 })
 export class AppModule {
+  constructor(private configService: ConfigService) {}
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(cookieSession({ keys: ['asdfasfd'] })).forRoutes('*');
+    consumer
+      .apply(cookieSession({ keys: [this.configService.get('COOKIE_KEY')] }))
+      .forRoutes('*');
   }
 }
